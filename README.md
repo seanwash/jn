@@ -2,6 +2,8 @@
 
 Just a simple utility to create or open a daily note.
 
+![jn.gif](jn.gif)
+
 ```
 /Users/seanwashbot/journal
 └── 2024
@@ -15,7 +17,6 @@ Just a simple utility to create or open a daily note.
 
 - [ ] Note template
 - [ ] Tests 😏
-- [ ] Raycast script
 - [ ] Command to store configs at ~/.jn
   - Journal destination
   - File extension
