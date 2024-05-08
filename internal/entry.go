@@ -8,15 +8,15 @@ import (
 	"time"
 )
 
-type Config struct {
+type Entry struct {
 	FileExtension string
 	HomePath      string
 	RootPath      string
 	FolderPath    string
-	EntryPath     string
+	FullPath      string
 }
 
-func NewConfig() Config {
+func NewEntry() Entry {
 	fileExtension := ".md"
 	today := time.Now()
 	homePath := getHomeDir()
@@ -24,12 +24,12 @@ func NewConfig() Config {
 	folderPath := path.Join(rootPath, fmt.Sprintf("%d", today.Year()), fmt.Sprintf("%02d", today.Month()))
 	entryName := fmt.Sprintf("%02d%s", today.Day(), fileExtension)
 
-	return Config{
+	return Entry{
 		FileExtension: fileExtension,
 		HomePath:      homePath,
 		RootPath:      rootPath,
 		FolderPath:    folderPath,
-		EntryPath:     path.Join(folderPath, entryName),
+		FullPath:      path.Join(folderPath, entryName),
 	}
 }
 

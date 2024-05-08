@@ -9,21 +9,21 @@ import (
 
 func main() {
 	args := os.Args[1:]
-	config := internal.NewConfig()
+	entry := internal.NewEntry()
 
 	if len(args) > 0 && args[0] == "journal" {
-		cmd := exec.Command("open", config.RootPath)
+		cmd := exec.Command("open", entry.RootPath)
 		runCmd(cmd)
 		return
 	}
 
-	openEntryCmd := exec.Command("open", config.EntryPath)
-	entryExists, _ := exists(config.EntryPath)
+	openEntryCmd := exec.Command("open", entry.FullPath)
+	entryExists, _ := exists(entry.FullPath)
 
 	if entryExists {
 		runCmd(openEntryCmd)
 	} else {
-		createEntry(config.FolderPath, config.EntryPath)
+		createEntry(entry.FolderPath, entry.FullPath)
 		runCmd(openEntryCmd)
 	}
 }
