@@ -12,7 +12,7 @@ func main() {
 	args := os.Args[1:]
 	entry := internal.NewEntry()
 	template := internal.NewTemplate()
-	templateExists, _ := internal.Exists(template.FullPath)
+	templateExists, _ := template.Exists()
 
 	if len(args) > 0 && args[0] == "journal" {
 		cmd := exec.Command("open", entry.RootPath)
@@ -21,70 +21,42 @@ func main() {
 	}
 
 	if len(args) > 0 && args[0] == "template" {
-		openTemplateCmd := exec.Command("open", template.FullPath)
-
 		if templateExists {
-			internal.RunCmd(openTemplateCmd)
+			template.Launch()
 			return
 		} else {
-			createEntry(template.RootPath, template.FullPath)
-			internal.RunCmd(openTemplateCmd)
+			_, err := template.Create()
+			if err != nil {
+				log.Fatal("Could not create template: ", err)
+			}
+			template.Launch()
 			return
 		}
 	}
 
-	openEntryCmd := exec.Command("open", entry.FullPath)
-	entryExists, _ := internal.Exists(entry.FullPath)
+	entryExists, err := entry.Exists()
+	if err != nil {
+		log.Fatal("Could not determine if entry exists: ", err)
+	}
 
 	if entryExists {
-		internal.RunCmd(openEntryCmd)
+		entry.Launch()
 		return
 	}
 
+	_, err = entry.Create()
+	if err != nil {
+		log.Fatal("Could not create entry: ", err)
+	}
+
 	if templateExists {
-		createEntryFromTemplate(entry.FolderPath, entry.FullPath, template.FullPath)
-	} else {
-		createEntry(entry.FolderPath, entry.FullPath)
+		templateContent, err := template.Read()
+
+		err = entry.Write(templateContent)
+		if err != nil {
+			log.Fatal("Could not write template contents to entry: ", err)
+		}
 	}
 
-	internal.RunCmd(openEntryCmd)
-}
-
-func createEntry(folderPath string, entryPath string) {
-	err := os.MkdirAll(folderPath, 0700)
-	if err != nil {
-		log.Fatal("Could not create new folder", err)
-	}
-
-	_, err = os.Create(entryPath)
-	if err != nil {
-		log.Fatal("Could not create new entry", err)
-	}
-}
-
-func createEntryFromTemplate(folderPath string, entryPath string, templatePath string) {
-	err := os.MkdirAll(folderPath, 0700)
-	if err != nil {
-		log.Fatal("Could not create new folder", err)
-	}
-
-	templateContent, err := os.ReadFile(templatePath)
-	if err != nil {
-		log.Fatal("Could not read template", err)
-	}
-
-	file, err := os.Create(entryPath)
-	if err != nil {
-		log.Fatal("Could not create new entry", err)
-	}
-
-	_, err = file.Write(templateContent)
-	if err != nil {
-		log.Fatal("Could not write template to new entry", err)
-	}
-
-	err = file.Close()
-	if err != nil {
-		log.Fatal("Could not close new entry", err)
-	}
+	entry.Launch()
 }
