@@ -2,8 +2,6 @@ package internal
 
 import (
 	"fmt"
-	"log"
-	"os"
 	"path"
 	"time"
 )
@@ -31,13 +29,4 @@ func NewEntry() Entry {
 		FolderPath:    folderPath,
 		FullPath:      path.Join(folderPath, entryName),
 	}
-}
-
-func getHomeDir() string {
-	homePath, err := os.UserHomeDir()
-	if err != nil {
-		log.Fatal("Could not get user's home dir: ", err)
-	}
-
-	return homePath
 }
